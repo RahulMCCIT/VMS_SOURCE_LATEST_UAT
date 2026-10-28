@@ -1209,8 +1209,8 @@ td.border_top {
     border: 2px solid #afcdea;
     border-radius: 12px;
     margin-top: 20px;
-    padding: 10px 30px;
-    font-size: 16px;
+    padding: 10px 10px;
+    font-size: 14px;
     line-height: 20px;
     letter-spacing: 0.35px;
     color: #333;
@@ -1826,4 +1826,7 @@ td.border_top {
 .qd-table-main-head {
     font-size: 13px !important;
     padding: 10px 0 !important;
+}
+.ajax__calendar {
+    z-index: 9999999;
 }

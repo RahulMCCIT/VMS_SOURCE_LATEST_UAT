@@ -61,22 +61,6 @@
                                 <label class="form-control-label">Process Year:</label>
                                 <asp:DropDownList ID="ddlYear" runat="server" AutoPostBack="True" CssClass="form-control select2"
                                     TabIndex="3">
-                                    <asp:ListItem>2010</asp:ListItem>
-                                    <asp:ListItem>2011</asp:ListItem>
-                                    <asp:ListItem>2012</asp:ListItem>
-                                    <asp:ListItem>2013</asp:ListItem>
-                                    <asp:ListItem>2014</asp:ListItem>
-                                    <asp:ListItem>2015</asp:ListItem>
-                                    <asp:ListItem>2016</asp:ListItem>
-                                    <asp:ListItem>2017</asp:ListItem>
-                                    <asp:ListItem>2018</asp:ListItem>
-                                    <asp:ListItem>2019</asp:ListItem>
-                                    <asp:ListItem>2020</asp:ListItem>
-                                    <asp:ListItem>2021</asp:ListItem>
-                                    <asp:ListItem>2022</asp:ListItem>
-                                    <asp:ListItem>2023</asp:ListItem>
-                                    <asp:ListItem>2024</asp:ListItem>
-                                    <asp:ListItem>2025</asp:ListItem>
                                 </asp:DropDownList>
                             </div>
                         </div>
@@ -102,7 +86,12 @@
                         </div>
                         <div class="col-md-3 form-btn-mt">
                             <div class="form-group">
-                                <asp:ImageButton ID="ImgbtnSearch" CssClass="btn btn-primary btn-sm" runat="server" ImageUrl="images/ic_search.gif" />
+                                <%-- Modified-by MUKESH BHAGAT on 08-09-2026 : this page still used the old
+                                     ic_search.gif ImageButton, so the button rendered as an image inside the
+                                     Bootstrap box and sat differently from every other list page. Switched to
+                                     the LinkButton used by UnitDespatchPlanListVr1 / VendorChallanList.
+                                <asp:ImageButton ID="ImgbtnSearch" CssClass="btn btn-primary btn-sm" runat="server" ImageUrl="images/ic_search.gif" /> --%>
+                                <asp:LinkButton CssClass="btn btn-primary btn-sm" ID="ImgbtnSearch" runat="server">Search</asp:LinkButton>
                             </div>
                         </div>
                     </div>

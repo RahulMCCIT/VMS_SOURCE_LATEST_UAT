@@ -23,6 +23,23 @@
         }
     </script>
 
+    <style type="text/css">
+        .box-label {
+            border: 1px solid #bfc9d3;
+            border-radius: 8px;
+            padding: 6px 12px;
+            min-height: 0px;
+            background-color: #fff;
+            font-weight: 400;
+            color: #24425c;
+        }
+
+        .box-label.textarea-label {
+            min-height: 72px;
+            white-space: pre-wrap;
+        }
+    </style>
+
     <div class="breadcrumbs">
         <div class="leftFung">
             <a href="Home.aspx" title="Home"><i class="fas fa-home"></i></a>
@@ -39,7 +56,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
-                    <div class="form-group pb-0">
+                    <div class="form-group">
                         <label class="form-control-label">Region:</label>
                         <asp:UpdatePanel ID="UpdatePanel2" runat="server">
                             <ContentTemplate>
@@ -49,7 +66,7 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="form-group pb-0">
+                    <div class="form-group">
                         <label class="form-control-label">Depot:</label>
                         <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                             <ContentTemplate>
@@ -78,13 +95,13 @@
                     <!-- Row for Address 1 and Address 2 -->
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group pb-0">
+                            <div class="form-group">
                                 <label class="form-control-label">Address 1:</label>
                                 <label class="form-control-label box-label textarea-label" id="lblAddr1" runat="server"></label>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group pb-0">
+                            <div class="form-group">
                                 <label class="form-control-label">Address 2:</label>
                                 <label class="form-control-label box-label textarea-label" id="lblAddr2" runat="server"></label>
                             </div>
@@ -94,37 +111,37 @@
                     <!-- Row for other details -->
                     <div class="row">
                         <div class="col-md-3">
-                            <div class="form-group pb-0">
+                            <div class="form-group">
                                 <label class="form-control-label">City:</label>
                                 <label class="form-control-label box-label" id="lblcity" runat="server"></label>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group pb-0">
+                            <div class="form-group">
                                 <label class="form-control-label">State:</label>
                                 <label class="form-control-label box-label" id="lblstate" runat="server"></label>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group pb-0">
+                            <div class="form-group">
                                 <label class="form-control-label">PinCode:</label>
                                 <label class="form-control-label box-label" id="lblpin" runat="server"></label>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group pb-0">
+                            <div class="form-group">
                                 <label class="form-control-label">Phone No:</label>
                                 <label class="form-control-label box-label" id="lblphno" runat="server"></label>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group pb-0">
+                            <div class="form-group">
                                 <label class="form-control-label">Email ID:</label>
                                 <label class="form-control-label box-label" id="lblemail" runat="server"></label>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group pb-0">
+                            <div class="form-group">
                                 <label class="form-control-label">GSTN No:</label>
                                 <label class="form-control-label box-label" id="lblgstn" runat="server"></label>
                             </div>

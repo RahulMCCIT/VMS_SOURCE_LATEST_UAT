@@ -1,6 +1,7 @@
 ﻿Imports System.Data
 Imports System.Data.SqlClient
 Imports Microsoft.VisualBasic
+Imports NPOI.SS.Formula.Functions
 Imports VMS.DataAccess
 
 Public Class POLinkingRequestClass
@@ -673,6 +674,564 @@ Public Class POLinkingRequestClass
         Catch ex As Exception
             Throw
         End Try
+    End Function
+
+    Public Function GetVendorPaymentDashboardDetails(ByVal vendorName As String, ByVal fromDate As Nullable(Of DateTime), ByVal toDate As Nullable(Of DateTime), ByVal userId As String) As DataSet
+
+        Try
+            Dim DS As DataSet
+            Dim sqlParams(3) As SqlParameter
+
+            sqlParams(0) = New SqlParameter()
+            sqlParams(0).ParameterName = "@from_date"
+            sqlParams(0).DbType = DbType.DateTime
+            sqlParams(0).Direction = ParameterDirection.Input
+            sqlParams(0).Value = If(fromDate.HasValue, CType(fromDate.Value, Object), DBNull.Value)
+
+            sqlParams(1) = New SqlParameter()
+            sqlParams(1).ParameterName = "@to_date"
+            sqlParams(1).DbType = DbType.DateTime
+            sqlParams(1).Direction = ParameterDirection.Input
+            sqlParams(1).Value = If(toDate.HasValue, CType(toDate.Value, Object), DBNull.Value)
+
+            sqlParams(2) = New SqlParameter()
+            sqlParams(2).ParameterName = "@user_id"
+            sqlParams(2).DbType = DbType.String
+            sqlParams(2).Direction = ParameterDirection.Input
+            sqlParams(2).Value = If(String.IsNullOrEmpty(userId), DBNull.Value, CObj(userId))
+
+            sqlParams(3) = New SqlParameter()
+            sqlParams(3).ParameterName = "@vendor_name"
+            sqlParams(3).DbType = DbType.String
+            sqlParams(3).Direction = ParameterDirection.Input
+            sqlParams(3).Value = If(String.IsNullOrEmpty(vendorName), DBNull.Value, CObj(vendorName))
+
+            'sqlParams(4) = New SqlParameter()
+            'sqlParams(4).ParameterName = "@page_number"
+            'sqlParams(4).DbType = DbType.Int32
+            'sqlParams(4).Direction = ParameterDirection.Input
+            'sqlParams(4).Value = pageNo
+
+            'sqlParams(5) = New SqlParameter()
+            'sqlParams(5).ParameterName = "@page_size"
+            'sqlParams(5).DbType = DbType.Int32
+            'sqlParams(5).Direction = ParameterDirection.Input
+            'sqlParams(5).Value = pageSize
+
+            DS = DBFactory.GetHelper().ExecuteDataSet("[dbo].[payment_reconciliation_dashboard_dtls]", CommandType.StoredProcedure, sqlParams)
+            Return DS
+
+        Catch ex As Exception
+            Throw
+        End Try
+    End Function
+
+    Public Function GetGrnNotDoneList(ByVal unitCode As String, ByVal fromDate As String, ByVal toDate As String, ByVal pageNo As Integer, ByVal pageSize As Integer) As DataSet
+        Try
+            Dim DS As DataSet
+            Dim sqlParams(2) As SqlParameter
+
+            sqlParams(0) = New SqlParameter()
+            sqlParams(0).ParameterName = "@unit_code"
+            sqlParams(0).DbType = DbType.String
+            sqlParams(0).Direction = ParameterDirection.Input
+            sqlParams(0).Value = unitCode
+
+            sqlParams(1) = New SqlParameter()
+            sqlParams(1).ParameterName = "@from_date"
+            sqlParams(1).DbType = DbType.DateTime
+            sqlParams(1).Direction = ParameterDirection.Input
+            sqlParams(1).Value = fromDate
+
+            sqlParams(2) = New SqlParameter()
+            sqlParams(2).ParameterName = "@to_date"
+            sqlParams(2).DbType = DbType.DateTime
+            sqlParams(2).Direction = ParameterDirection.Input
+            sqlParams(2).Value = toDate
+
+            'sqlParams(3) = New SqlParameter()
+            'sqlParams(3).ParameterName = "@page_number"
+            'sqlParams(3).DbType = DbType.Int32
+            'sqlParams(3).Direction = ParameterDirection.Input
+            'sqlParams(3).Value = pageNo
+
+            'sqlParams(4) = New SqlParameter()
+            'sqlParams(4).ParameterName = "@page_size"
+            'sqlParams(4).DbType = DbType.Int32
+            'sqlParams(4).Direction = ParameterDirection.Input
+            'sqlParams(4).Value = pageSize
+
+            DS = DBFactory.GetHelper().ExecuteDataSet("[dbo].[get_grn_not_done_details]", CommandType.StoredProcedure, sqlParams)
+            Return DS
+
+        Catch ex As Exception
+            Throw
+        End Try
+    End Function
+
+    Public Function GetManualGrnList(ByVal unitCode As String, ByVal fromDate As String, ByVal toDate As String, ByVal pageNo As Integer, ByVal pageSize As Integer) As DataSet
+        Try
+            Dim DS As DataSet
+            Dim sqlParams(2) As SqlParameter
+
+            sqlParams(0) = New SqlParameter()
+            sqlParams(0).ParameterName = "@unit_code"
+            sqlParams(0).DbType = DbType.String
+            sqlParams(0).Direction = ParameterDirection.Input
+            sqlParams(0).Value = unitCode
+
+            sqlParams(1) = New SqlParameter()
+            sqlParams(1).ParameterName = "@from_date"
+            sqlParams(1).DbType = DbType.DateTime
+            sqlParams(1).Direction = ParameterDirection.Input
+            sqlParams(1).Value = fromDate
+
+            sqlParams(2) = New SqlParameter()
+            sqlParams(2).ParameterName = "@to_date"
+            sqlParams(2).DbType = DbType.DateTime
+            sqlParams(2).Direction = ParameterDirection.Input
+            sqlParams(2).Value = toDate
+
+            'sqlParams(3) = New SqlParameter()
+            'sqlParams(3).ParameterName = "@page_number"
+            'sqlParams(3).DbType = DbType.Int32
+            'sqlParams(3).Direction = ParameterDirection.Input
+            'sqlParams(3).Value = pageNo
+
+            'sqlParams(4) = New SqlParameter()
+            'sqlParams(4).ParameterName = "@page_size"
+            'sqlParams(4).DbType = DbType.Int32
+            'sqlParams(4).Direction = ParameterDirection.Input
+            'sqlParams(4).Value = pageSize
+
+            DS = DBFactory.GetHelper().ExecuteDataSet("[dbo].[get_manual_grn_details]", CommandType.StoredProcedure, sqlParams)
+            Return DS
+
+        Catch ex As Exception
+            Throw
+        End Try
+    End Function
+
+    Public Function GetInvPaymentList(ByVal unitCode As String, ByVal fromDate As String, ByVal toDate As String, ByVal pageNo As Integer, ByVal pageSize As Integer) As DataSet
+        Try
+            Dim DS As DataSet
+            Dim sqlParams(2) As SqlParameter
+
+            sqlParams(0) = New SqlParameter()
+            sqlParams(0).ParameterName = "@unit_code"
+            sqlParams(0).DbType = DbType.String
+            sqlParams(0).Direction = ParameterDirection.Input
+            sqlParams(0).Value = unitCode
+
+            sqlParams(1) = New SqlParameter()
+            sqlParams(1).ParameterName = "@from_date"
+            sqlParams(1).DbType = DbType.DateTime
+            sqlParams(1).Direction = ParameterDirection.Input
+            sqlParams(1).Value = fromDate
+
+            sqlParams(2) = New SqlParameter()
+            sqlParams(2).ParameterName = "@to_date"
+            sqlParams(2).DbType = DbType.DateTime
+            sqlParams(2).Direction = ParameterDirection.Input
+            sqlParams(2).Value = toDate
+
+            'sqlParams(3) = New SqlParameter()
+            'sqlParams(3).ParameterName = "@page_number"
+            'sqlParams(3).DbType = DbType.Int32
+            'sqlParams(3).Direction = ParameterDirection.Input
+            'sqlParams(3).Value = pageNo
+
+            'sqlParams(4) = New SqlParameter()
+            'sqlParams(4).ParameterName = "@page_size"
+            'sqlParams(4).DbType = DbType.Int32
+            'sqlParams(4).Direction = ParameterDirection.Input
+            'sqlParams(4).Value = pageSize
+
+            'Modified-by MUKESH BHAGAT on 24-09-2026 : _vr1 SP - the PAID tab now lists only FULLY PAID
+            'invoices (invoice_amount - amount_paid = 0), the same rule as the dashboard tile count and
+            'the Excel report. The old SP listed every release with a GRN, so GRN-done-but-unpaid rows
+            'showed under Paid. Roll-back = use "[dbo].[get_inv_payment_details]" again.
+            DS = DBFactory.GetHelper().ExecuteDataSet("[dbo].[get_inv_payment_details_vr1]", CommandType.StoredProcedure, sqlParams)
+            Return DS
+
+        Catch ex As Exception
+            Throw
+        End Try
+    End Function
+
+    Public Function GetDispatchList(ByVal unitCode As String, ByVal fromDate As String, ByVal toDate As String, ByVal pageNo As Integer, ByVal pageSize As Integer) As DataSet
+        Try
+            Dim DS As DataSet
+            Dim sqlParams(2) As SqlParameter
+
+            sqlParams(0) = New SqlParameter()
+            sqlParams(0).ParameterName = "@unit_code"
+            sqlParams(0).DbType = DbType.String
+            sqlParams(0).Direction = ParameterDirection.Input
+            sqlParams(0).Value = unitCode
+
+            sqlParams(1) = New SqlParameter()
+            sqlParams(1).ParameterName = "@from_date"
+            sqlParams(1).DbType = DbType.DateTime
+            sqlParams(1).Direction = ParameterDirection.Input
+            sqlParams(1).Value = fromDate
+
+            sqlParams(2) = New SqlParameter()
+            sqlParams(2).ParameterName = "@to_date"
+            sqlParams(2).DbType = DbType.DateTime
+            sqlParams(2).Direction = ParameterDirection.Input
+            sqlParams(2).Value = toDate
+
+            'sqlParams(3) = New SqlParameter()
+            'sqlParams(3).ParameterName = "@page_number"
+            'sqlParams(3).DbType = DbType.Int32
+            'sqlParams(3).Direction = ParameterDirection.Input
+            'sqlParams(3).Value = pageNo
+
+            'sqlParams(4) = New SqlParameter()
+            'sqlParams(4).ParameterName = "@page_size"
+            'sqlParams(4).DbType = DbType.Int32
+            'sqlParams(4).Direction = ParameterDirection.Input
+            'sqlParams(4).Value = pageSize
+
+            DS = DBFactory.GetHelper().ExecuteDataSet("[dbo].[get_dispatched_details]", CommandType.StoredProcedure, sqlParams)
+            Return DS
+
+        Catch ex As Exception
+            Throw
+        End Try
+    End Function
+
+    Public Function GetDeliveredList(ByVal unitCode As String, ByVal fromDate As String, ByVal toDate As String, ByVal pageNo As Integer, ByVal pageSize As Integer) As DataSet
+        Try
+            Dim DS As DataSet
+            Dim sqlParams(2) As SqlParameter
+
+            sqlParams(0) = New SqlParameter()
+            sqlParams(0).ParameterName = "@unit_code"
+            sqlParams(0).DbType = DbType.String
+            sqlParams(0).Direction = ParameterDirection.Input
+            sqlParams(0).Value = unitCode
+
+            sqlParams(1) = New SqlParameter()
+            sqlParams(1).ParameterName = "@from_date"
+            sqlParams(1).DbType = DbType.DateTime
+            sqlParams(1).Direction = ParameterDirection.Input
+            sqlParams(1).Value = fromDate
+
+            sqlParams(2) = New SqlParameter()
+            sqlParams(2).ParameterName = "@to_date"
+            sqlParams(2).DbType = DbType.DateTime
+            sqlParams(2).Direction = ParameterDirection.Input
+            sqlParams(2).Value = toDate
+
+            'sqlParams(3) = New SqlParameter()
+            'sqlParams(3).ParameterName = "@page_number"
+            'sqlParams(3).DbType = DbType.Int32
+            'sqlParams(3).Direction = ParameterDirection.Input
+            'sqlParams(3).Value = pageNo
+
+            'sqlParams(4) = New SqlParameter()
+            'sqlParams(4).ParameterName = "@page_size"
+            'sqlParams(4).DbType = DbType.Int32
+            'sqlParams(4).Direction = ParameterDirection.Input
+            'sqlParams(4).Value = pageSize
+
+            DS = DBFactory.GetHelper().ExecuteDataSet("[dbo].[get_delivered_details]", CommandType.StoredProcedure, sqlParams)
+            Return DS
+
+        Catch ex As Exception
+            Throw
+        End Try
+    End Function
+
+    Public Function InsertRawMaterialPo(ByVal vendor_code As String, ByVal supplier_code As String, ByVal user_id As String, ByVal tbl As DataTable, ByVal freightGst As Nullable(Of Decimal), ByVal freightCost As Decimal, Optional ByVal refPoNo As String = "") As String
+        Dim sqlConn As SqlConnection = Nothing
+        Dim sqlTrans As SqlTransaction = Nothing
+        Dim poNo As String = String.Empty
+        sqlConn = DBFactory.GetHelper.OpenConnection
+        sqlTrans = sqlConn.BeginTransaction
+
+        Dim sqlParams(6) As SqlParameter
+        Try
+            sqlParams(0) = New SqlParameter()
+            sqlParams(0).ParameterName = "@vendor_code"
+            sqlParams(0).SqlDbType = SqlDbType.VarChar
+            sqlParams(0).Size = 50
+            sqlParams(0).Direction = Data.ParameterDirection.Input
+            sqlParams(0).Value = vendor_code
+
+            sqlParams(1) = New SqlParameter()
+            sqlParams(1).ParameterName = "@supplier_code"
+            sqlParams(1).SqlDbType = SqlDbType.VarChar
+            sqlParams(1).Size = 50
+            sqlParams(1).Direction = Data.ParameterDirection.Input
+            sqlParams(1).Value = supplier_code
+
+            sqlParams(2) = New SqlParameter()
+            sqlParams(2).ParameterName = "@gst"
+            sqlParams(2).SqlDbType = SqlDbType.Decimal
+            sqlParams(2).Precision = 18
+            sqlParams(2).Scale = 2
+            sqlParams(2).Direction = Data.ParameterDirection.Input
+            sqlParams(2).Value = If(freightGst.HasValue, CObj(freightGst.Value), DBNull.Value)
+
+            sqlParams(3) = New SqlParameter()
+            sqlParams(3).ParameterName = "@freight"
+            sqlParams(3).SqlDbType = SqlDbType.Decimal
+            sqlParams(3).Precision = 18
+            sqlParams(3).Scale = 2
+            sqlParams(3).Direction = Data.ParameterDirection.Input
+            sqlParams(3).Value = freightCost
+
+            sqlParams(4) = New SqlParameter()
+            sqlParams(4).ParameterName = "@created_user"
+            sqlParams(4).SqlDbType = SqlDbType.VarChar
+            sqlParams(4).Size = 50
+            sqlParams(4).Direction = Data.ParameterDirection.Input
+            sqlParams(4).Value = user_id
+
+            sqlParams(5) = New SqlParameter()
+            sqlParams(5).ParameterName = "@dtls"
+            sqlParams(5).SqlDbType = SqlDbType.Structured
+            sqlParams(5).TypeName = "dbo.tbl_raw_mtrl_po_dtls"
+            sqlParams(5).Direction = Data.ParameterDirection.Input
+            sqlParams(5).Value = tbl
+
+            sqlParams(6) = New SqlParameter()
+            sqlParams(6).ParameterName = "@ref_po_no"
+            sqlParams(6).SqlDbType = SqlDbType.VarChar
+            sqlParams(6).Size = 20
+            sqlParams(6).Direction = Data.ParameterDirection.Input
+            sqlParams(6).Value = If(String.IsNullOrWhiteSpace(refPoNo), CObj(DBNull.Value), refPoNo.Trim())
+
+            Dim poNoParam As New SqlParameter()
+            poNoParam.ParameterName = "@rmph_po_no"
+            poNoParam.SqlDbType = SqlDbType.VarChar
+            poNoParam.Size = 10
+            poNoParam.Direction = Data.ParameterDirection.Output
+
+            Dim sqlCmd As New SqlCommand()
+            sqlCmd.Connection = sqlConn
+            sqlCmd.Transaction = sqlTrans
+            sqlCmd.CommandType = CommandType.StoredProcedure
+            sqlCmd.CommandText = "[dbo].[raw_mtrl_po_insert]"
+            sqlCmd.Parameters.AddRange(sqlParams)
+            sqlCmd.Parameters.Add(poNoParam)
+            sqlCmd.ExecuteNonQuery()
+
+            poNo = Convert.ToString(poNoParam.Value).Trim()
+
+            If poNo <> "" Then
+                sqlTrans.Commit()
+            Else
+                sqlTrans.Rollback()
+            End If
+        Catch ex As SqlException
+            If (sqlTrans IsNot Nothing) Then
+                sqlTrans.Rollback()
+            End If
+            Throw
+        Finally
+            If (sqlConn IsNot Nothing) Then
+                sqlConn.Close()
+            End If
+        End Try
+        Return poNo
+    End Function
+
+    Public Function GetRawMaterialPoList(ByVal userId As String, ByVal vendorCode As String) As DataSet
+        Dim sqlParams(1) As SqlParameter
+
+        sqlParams(0) = New SqlParameter()
+        sqlParams(0).ParameterName = "@user_id"
+        sqlParams(0).DbType = DbType.String
+        sqlParams(0).Direction = ParameterDirection.Input
+        sqlParams(0).Value = userId
+
+        sqlParams(1) = New SqlParameter()
+        sqlParams(1).ParameterName = "@vendor_code"
+        sqlParams(1).DbType = DbType.String
+        sqlParams(1).Direction = ParameterDirection.Input
+        sqlParams(1).Value = If(String.IsNullOrWhiteSpace(vendorCode), CObj(DBNull.Value), vendorCode.Trim())
+
+        Return DBFactory.GetHelper().ExecuteDataSet("[dbo].[raw_mtrl_po_list]", CommandType.StoredProcedure, sqlParams)
+    End Function
+
+    Public Function GetRawMaterialPoDocument(ByVal poNo As String) As DataSet
+        Dim sqlParams(0) As SqlParameter
+
+        sqlParams(0) = New SqlParameter()
+        sqlParams(0).ParameterName = "@po_no"
+        sqlParams(0).SqlDbType = SqlDbType.VarChar
+        sqlParams(0).Size = 10
+        sqlParams(0).Direction = ParameterDirection.Input
+        sqlParams(0).Value = poNo
+
+        Return DBFactory.GetHelper().ExecuteDataSet("[dbo].[raw_mtrl_po_doc_get]", CommandType.StoredProcedure, sqlParams)
+    End Function
+
+    Public Function UpdatePoDocPath(ByVal docPath As String, ByVal docName As String, ByVal poNo As String) As Integer
+        Dim sqlConn As SqlConnection = Nothing
+        Dim sqlTrans As SqlTransaction = Nothing
+        Dim rowAffected As Integer
+        sqlConn = DBFactory.GetHelper.OpenConnection
+        sqlTrans = sqlConn.BeginTransaction
+
+        Dim sqlParams(2) As SqlParameter
+        Try
+            sqlParams(0) = New SqlParameter()
+            sqlParams(0).ParameterName = "@doc_path"
+            sqlParams(0).SqlDbType = SqlDbType.VarChar
+            sqlParams(0).Size = 50
+            sqlParams(0).Direction = Data.ParameterDirection.Input
+            sqlParams(0).Value = docPath
+
+            sqlParams(1) = New SqlParameter()
+            sqlParams(1).ParameterName = "@doc_name"
+            sqlParams(1).SqlDbType = SqlDbType.VarChar
+            sqlParams(1).Size = -1
+            sqlParams(1).Direction = Data.ParameterDirection.Input
+            sqlParams(1).Value = docName
+
+            sqlParams(2) = New SqlParameter()
+            sqlParams(2).ParameterName = "@po_no"
+            sqlParams(2).SqlDbType = SqlDbType.VarChar
+            sqlParams(2).Size = 10
+            sqlParams(2).Direction = Data.ParameterDirection.Input
+            sqlParams(2).Value = poNo
+
+            Dim sqlCmd As New SqlCommand()
+            sqlCmd.Connection = sqlConn
+            sqlCmd.Transaction = sqlTrans
+            sqlCmd.CommandType = CommandType.StoredProcedure
+            sqlCmd.CommandText = "[dbo].[po_update_doc_path]"
+            sqlCmd.Parameters.AddRange(sqlParams)
+            rowAffected = sqlCmd.ExecuteNonQuery()
+
+            If rowAffected > 0 Then
+                sqlTrans.Commit()
+            Else
+                sqlTrans.Rollback()
+            End If
+        Catch ex As SqlException
+            If (sqlTrans IsNot Nothing) Then
+                sqlTrans.Rollback()
+            End If
+            Throw
+        Finally
+            If (sqlConn IsNot Nothing) Then
+                sqlConn.Close()
+            End If
+        End Try
+        Return poNo
+    End Function
+
+#End Region
+
+#Region "Brand Product Linking"
+    Public Function GetBrandProductLinkBrands() As DataSet
+        Return DBFactory.GetHelper().ExecuteDataSet("[dbo].[opc_brand_product_linking_brand_list]", CommandType.StoredProcedure)
+    End Function
+
+    Public Function GetBrandProductLinkProducts() As DataSet
+        Return DBFactory.GetHelper().ExecuteDataSet("[dbo].[opc_brand_product_linking_product_list]", CommandType.StoredProcedure)
+    End Function
+
+    Public Function InsertBrandProductLinks(ByVal userId As String, ByVal tbl As DataTable) As DataSet
+        Dim sqlConn As SqlConnection = Nothing
+        Dim sqlTrans As SqlTransaction = Nothing
+        Dim ds As New DataSet()
+
+        sqlConn = DBFactory.GetHelper.OpenConnection()
+        sqlTrans = sqlConn.BeginTransaction()
+
+        Dim sqlParams(1) As SqlParameter
+
+        Try
+            sqlParams(0) = New SqlParameter()
+            sqlParams(0).ParameterName = "@user_id"
+            sqlParams(0).SqlDbType = SqlDbType.VarChar
+            sqlParams(0).Size = 20
+            sqlParams(0).Direction = Data.ParameterDirection.Input
+            sqlParams(0).Value = If(String.IsNullOrWhiteSpace(userId), CObj(DBNull.Value), userId.Trim())
+
+            sqlParams(1) = New SqlParameter()
+            sqlParams(1).ParameterName = "@tbl"
+            sqlParams(1).SqlDbType = SqlDbType.Structured
+            sqlParams(1).TypeName = "dbo.tbl_opc_brand_product_linking"
+            sqlParams(1).Direction = Data.ParameterDirection.Input
+            sqlParams(1).Value = tbl
+
+            Dim sqlCmd As New SqlCommand()
+            sqlCmd.Connection = sqlConn
+            sqlCmd.Transaction = sqlTrans
+            sqlCmd.CommandType = CommandType.StoredProcedure
+            sqlCmd.CommandText = "[dbo].[opc_brand_product_linking_insert]"
+            sqlCmd.Parameters.AddRange(sqlParams)
+
+            Dim adapter As New SqlDataAdapter(sqlCmd)
+            adapter.Fill(ds)
+
+            sqlTrans.Commit()
+
+        Catch ex As SqlException
+            If sqlTrans IsNot Nothing Then
+                sqlTrans.Rollback()
+            End If
+            Throw
+
+        Finally
+            If sqlConn IsNot Nothing Then
+                sqlConn.Close()
+            End If
+        End Try
+
+        Return ds
+    End Function
+#End Region
+
+#Region "Cancelled by Vendor (Vendor Payment Dashboard)"
+    'Modified-by MUKESH BHAGAT on 11-09-2026 : "Cancelled by Vendor" on the Dispatch List.
+    'The flag lives on despatch_hdr (desph_vendor_cancel_yn); the attached credit-note /
+    'supporting PDFs live in dbo.vpr_vendor_cancellation_doc. One call per uploaded file.
+
+    Public Function InsertVendorCancellationDoc(ByVal releaseId As Integer, ByVal unitCode As String, ByVal depotCode As String,
+                                                ByVal invoiceNo As String, ByVal invoiceDate As Object, ByVal invoiceValue As Object,
+                                                ByVal remarks As String, ByVal docType As String,
+                                                ByVal fileName As String, ByVal orgFileName As String, ByVal docPath As String,
+                                                ByVal userId As String) As DataSet
+        Dim sqlParams(11) As SqlParameter
+
+        sqlParams(0) = New SqlParameter("@release_id", SqlDbType.Int) With {.Value = releaseId}
+        sqlParams(1) = New SqlParameter("@unit_code", SqlDbType.VarChar, 50) With {.Value = unitCode}
+        sqlParams(2) = New SqlParameter("@depot_code", SqlDbType.VarChar, 10) With {.Value = If(String.IsNullOrEmpty(depotCode), DBNull.Value, CObj(depotCode))}
+        sqlParams(3) = New SqlParameter("@invoice_no", SqlDbType.VarChar, 100) With {.Value = If(String.IsNullOrEmpty(invoiceNo), DBNull.Value, CObj(invoiceNo))}
+        sqlParams(4) = New SqlParameter("@invoice_date", SqlDbType.DateTime) With {.Value = If(invoiceDate Is Nothing, DBNull.Value, invoiceDate)}
+        sqlParams(5) = New SqlParameter("@invoice_value", SqlDbType.Decimal) With {.Precision = 18, .Scale = 2, .Value = If(invoiceValue Is Nothing, DBNull.Value, invoiceValue)}
+        sqlParams(6) = New SqlParameter("@remarks", SqlDbType.VarChar, 500) With {.Value = If(String.IsNullOrEmpty(remarks), DBNull.Value, CObj(remarks))}
+        sqlParams(7) = New SqlParameter("@doc_type", SqlDbType.VarChar, 50) With {.Value = docType}
+        sqlParams(8) = New SqlParameter("@doc_file_name", SqlDbType.VarChar, 200) With {.Value = fileName}
+        sqlParams(9) = New SqlParameter("@doc_org_filename", SqlDbType.VarChar, 200) With {.Value = orgFileName}
+        sqlParams(10) = New SqlParameter("@doc_path", SqlDbType.VarChar, 500) With {.Value = docPath}
+        sqlParams(11) = New SqlParameter("@user_id", SqlDbType.VarChar, 50) With {.Value = userId}
+
+        Return DBFactory.GetHelper().ExecuteDataSet("[dbo].[vpr_vendor_cancellation_insert]", CommandType.StoredProcedure, sqlParams)
+    End Function
+
+    Public Function GetVendorCancellationDocs(ByVal releaseId As Integer, ByVal unitCode As String) As DataSet
+        Dim sqlParams(1) As SqlParameter
+        sqlParams(0) = New SqlParameter("@release_id", SqlDbType.Int) With {.Value = releaseId}
+        sqlParams(1) = New SqlParameter("@unit_code", SqlDbType.VarChar, 50) With {.Value = unitCode}
+        Return DBFactory.GetHelper().ExecuteDataSet("[dbo].[vpr_vendor_cancellation_get]", CommandType.StoredProcedure, sqlParams)
+    End Function
+
+    Public Function DeactivateVendorCancellation(ByVal releaseId As Integer, ByVal unitCode As String, ByVal userId As String) As DataSet
+        Dim sqlParams(2) As SqlParameter
+        sqlParams(0) = New SqlParameter("@release_id", SqlDbType.Int) With {.Value = releaseId}
+        sqlParams(1) = New SqlParameter("@unit_code", SqlDbType.VarChar, 50) With {.Value = unitCode}
+        sqlParams(2) = New SqlParameter("@user_id", SqlDbType.VarChar, 50) With {.Value = userId}
+        Return DBFactory.GetHelper().ExecuteDataSet("[dbo].[vpr_vendor_cancellation_deactivate]", CommandType.StoredProcedure, sqlParams)
     End Function
 #End Region
 End Class

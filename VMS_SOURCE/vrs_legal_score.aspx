@@ -53,6 +53,15 @@
         }
     </script>
 
+    <style>
+        .p-vrs-legal-table td:has(a[title="Download Document"]) {
+            display: flex;
+            width: 100% !important;
+            gap: 4px;
+            align-items: center;
+        }
+    </style>
+
     <div class="breadcrumbs">
         <div class="leftFung">
             <a href="Home.aspx" title="Home"><i class="fas fa-home"></i></a>
@@ -70,35 +79,35 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-3">
-                            <div class="form-group pb-0">
+                        <div class="col-md-2">
+                            <div class="form-group">
                                 <label class="form-control-label">Fin Year:</label>
                                 <asp:DropDownList ID="ddlFinYear" class="form-control select2" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlFinYear_SelectedIndexChanged" />
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-group pb-0">
+                        <div class="col-md-2">
+                            <div class="form-group">
                                 <label class="form-control-label">Quarter:</label>
                                 <asp:DropDownList ID="ddlquartor" class="form-control select2" runat="server" />
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="form-group pb-0">
+                            <div class="form-group">
                                 <label class="form-control-label">Vendor:</label>
                                 <asp:DropDownList ID="ddlvendor" class="form-control select2" runat="server" />
                             </div>
                         </div>
-
-                        <div class="col-md-2 form-btn-mt">
+                        <div class="col-md-4 form-btn-mt">
                             <asp:UpdatePanel runat="server" ID="UpdatePanel8">
                                 <ContentTemplate>
                                     <asp:Button ID="btnsearch" runat="server" Text="Search" CssClass="btn btn-primary btn-sm" />
                                     <asp:Button ID="btnReset" runat="server" Text="Reset" CssClass="btn btn-warning btn-sm" />
-                                    <asp:Label ID="lblError" CssClass="errormsg" Visible="true" runat="server"></asp:Label>
+
                                 </ContentTemplate>
                             </asp:UpdatePanel>
                         </div>
                     </div>
+                    <asp:Label ID="lblError" CssClass="errormsg" Visible="true" runat="server"></asp:Label>
                 </div>
             </div>
         </ContentTemplate>
@@ -119,7 +128,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                            <div class="table-responsive p-vrs-legal-table" style="max-height: 300px; overflow-y: auto;">
                                 <asp:GridView ID="gvLegalScoreList" runat="server" AutoGenerateColumns="False" EmptyDataText="No records found" AllowPaging="true" PageSize="20" BorderWidth="1" CssClass="table table-hover upgradDataGrid" OnRowDataBound="gvLegalScoreList_RowDataBound">
                                     <RowStyle CssClass="tlrowlight" />
                                     <PagerStyle CssClass="PagerGrid" HorizontalAlign="Right" />

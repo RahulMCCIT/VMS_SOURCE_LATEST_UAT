@@ -59,7 +59,7 @@
 
 
 
-    <div class="rm-module rm-compact cpl-page">
+    <div class="cpl-page">
 
         <div class="breadcrumbs">
             <div class="leftFung">
@@ -77,7 +77,7 @@
             <div class="card-body">
                 <div class="row cpl-filter">
                     <div class="col-md-4">
-                        <div class="form-group pb-0 mb-0">
+                        <div class="form-group mb-0">
                             <label class="form-control-label">Product:</label>
                             <asp:DropDownList ID="ddlproduct" class="form-control form-control-sm select2" AutoPostBack="true" OnSelectedIndexChanged="ddlproduct_SelectedIndexChanged" runat="server"></asp:DropDownList>
                         </div>

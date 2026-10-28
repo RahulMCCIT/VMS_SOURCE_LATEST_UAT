@@ -9,7 +9,11 @@
     <script type="text/javascript">var cal1 = new CalendarPopup();</script>
     <script src="Scripts/FunctionValidator.js" type="text/javascript"></script>
     <%--<asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>--%>
-
+    <style>
+        .vendor-name-column {
+            min-width: 150px;
+        }
+    </style>
     <div class="breadcrumbs">
         <div class="leftFung">
             <a href="Home.aspx" title="Home"><i class="fas fa-home"></i></a>
@@ -89,6 +93,15 @@
     </div>
 
     <div class="card">
+        <div class="mst-panel-header">
+            <div class="mst-panel-header-left">
+                <span class="mst-panel-icon"><i class="fas fa-list"></i></span>
+                <div>
+                    <h5 class="mst-panel-title">PO Linking Request List</h5>
+                    <p class="mst-panel-subtitle">Browse and manage user profiles</p>
+                </div>
+            </div>
+        </div>
         <div class="card-body">
             <div class="table-responsive">
                 <asp:GridView ID="gvVendorInvoiceDtls" runat="server" AutoGenerateColumns="false" AllowPaging="True" OnRowDataBound="gvVendorInvoiceDtls_RowDataBound" CssClass="table table-hover upgradDataGrid" EmptyDataText="No Record Found">
@@ -106,6 +119,12 @@
                             HeaderText="Type" DataField="Type">
                             <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="10%" />
                             <ItemStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="10%" />
+                            <FooterStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="10%" />
+                        </asp:BoundField>
+                        <asp:BoundField HeaderStyle-HorizontalAlign="Center" ItemStyle-HorizontalAlign="Center"
+                            HeaderText="Vendor Name" DataField="vendor_unit_name">
+                            <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="10%" />
+                            <ItemStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="10%" CssClass="vendor-name-column" />
                             <FooterStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="10%" />
                         </asp:BoundField>
                         <asp:BoundField HeaderStyle-HorizontalAlign="Center" ItemStyle-HorizontalAlign="Center"

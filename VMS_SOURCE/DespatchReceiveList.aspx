@@ -15,17 +15,23 @@
             else if (event.keyCode == 119) {
                 __doPostBack(document.getElementById('<%= imgbtnSearch.ClientID %>').name, '');
             }
-        }
+    }
 
-        function disableBackButton() {
-            window.history.forward(1);
-        }
-        window.onload = disableBackButton;
+    function disableBackButton() {
+        window.history.forward(1);
+    }
+    window.onload = disableBackButton;
     </script>
     <script type="text/javascript">
         var cal1 = new CalendarPopup();
     </script>
-
+    <style>
+        .no-record-card table tr td {
+            border-radius: 10px;
+            background-color: white !important;
+            border: 1px solid #000000;
+        }
+    </style>
     <div class="breadcrumbs">
         <div class="leftFung">
             <a href="Home.aspx" title="Home"><i class="fas fa-home"></i></a>
@@ -122,10 +128,19 @@
             </div>
 
             <div class="card">
+                <div class="mst-panel-header">
+                    <div class="mst-panel-header-left">
+                        <span class="mst-panel-icon"><i class="fas fa-list"></i></span>
+                        <div>
+                            <h5 class="mst-panel-title">Pending Receipt Confirmation List</h5>
+                            <p class="mst-panel-subtitle">Browse and manage user profiles</p>
+                        </div>
+                    </div>
+                </div>
                 <div class="card-body">
                     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                         <ContentTemplate>
-                            <div class="table-responsive">
+                            <div class="table-responsive no-record-card">
                                 <asp:GridView ID="gvDespatchRecvList" EmptyDataText="No record(s) found." runat="server" AutoGenerateColumns="False" BorderWidth="1" CssClass="table table-hover upgradDataGrid">
                                     <RowStyle CssClass="tlrowlight" />
                                     <PagerStyle CssClass="PagerGrid" HorizontalAlign="Right" />
@@ -224,8 +239,8 @@
                                             <ItemTemplate>
                                                 <div style="position: relative;">
                                                     <asp:TextBox ID="txtRecvDate" CssClass="form-control" runat="server" Text='<%# Bind("receive_date") %>' MaxLength="10" Enabled="False"></asp:TextBox>
-                                                    <a class="formCalndIcon" style="top: 5px; right: 5px;" id="Calender" runat="server">
-                                                        <img src="images/date_icon.gif" id="Img1" alt="Calender" style="border: 0; position: relative;" />
+                                                    <a class="formCalndIcon" style="top: 4px; right: 5px;" id="Calender" runat="server">
+                                                        <img src="images/p-calendar.png" id="Img1" alt="Calender" style="border: 0; position: relative;" />
                                                     </a>
                                                 </div>
                                             </ItemTemplate>

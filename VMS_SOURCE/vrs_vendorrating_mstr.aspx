@@ -333,7 +333,7 @@
                             </ul>
                             <div class="row">
                                 <div class="col-md-8">
-                                    <asp:Chart ID="PerformanceChart" runat="server" Height="155" Width="420">
+                                    <asp:Chart ID="PerformanceChart" runat="server" Height="155" style="width: 100%;">
                                         <Series>
                                             <asp:Series Name="Performance" ChartType="Line" BorderWidth="4" Color="#007d9c"></asp:Series>
                                         </Series>
@@ -363,7 +363,7 @@
                         </div>
                         <div class="col-md-6">
                             <h4 class="gridTitleTx">Top 10 Unit List</h4>
-                            <div class="table-responsive tvlGridHt">
+                            <div class="table-responsive tvlGridHt" style="height:auto; max-height: 190px;">
                                 <asp:GridView ID="gvTopvendor" runat="server" AutoGenerateColumns="False" EmptyDataText="No records found" CssClass="upgradDataGrid m-0 custGvTopvendorGrid" CellSpacing="0" CellPadding="0">
                                     <RowStyle CssClass="tlrowlight" />
                                     <SelectedRowStyle />
@@ -989,25 +989,25 @@
                     <ContentTemplate>
                         <div class="row mb-1">
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Target Score:</label>
                                     <asp:TextBox ID="txttotalTargetScore" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Obtain Score:</label>
                                     <asp:TextBox ID="txttotalObtainScore" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Obtain Percentage:</label>
                                     <asp:TextBox ID="txttotalObtainPercentage" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Obtain Weightage:</label>
                                     <asp:TextBox ID="txtWeightage" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
@@ -1119,25 +1119,25 @@
                     <ContentTemplate>
                         <div class="row mb-1">
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Target Score:</label>
                                     <asp:TextBox ID="txtQualitytargetScore" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Obtain Score:</label>
                                     <asp:TextBox ID="txtQualityTotalObtainScore" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
                             </div>
                             <%--   <div class="col-md-3">
-                                    <div class="form-group pb-0">
+                                    <div class="form-group">
                                         <label class="form-control-label">Total Obtain Percentage:</label>
                                         <asp:TextBox ID="txtQualityObtainPercentage" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                     </div>
                                 </div>--%>
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Obtain Weightage:</label>
                                     <asp:TextBox ID="txtQualityObtainWeightage" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
@@ -1339,25 +1339,25 @@
                     <ContentTemplate>
                         <div class="row mb-1">
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Target Score:</label>
                                     <asp:TextBox ID="txtAuditTargetScore" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Obtain Score:</label>
                                     <asp:TextBox ID="txtAuditObtainScore" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Obtain Percentage:</label>
                                     <asp:TextBox ID="txtAuditObtainPercentage" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Obtain Weightage:</label>
                                     <asp:TextBox ID="txtAuditObtainWeightage" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
@@ -1442,25 +1442,25 @@
                     <ContentTemplate>
                         <div class="row mb-1">
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Target Score:</label>
                                     <asp:TextBox ID="txtCompTargetScore" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Obtain Score:</label>
                                     <asp:TextBox ID="txtCompObtainScore" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
                             </div>
                             <%--<div class="col-md-3">
-                                    <div class="form-group pb-0">
+                                    <div class="form-group">
                                         <label class="form-control-label">Total Obtain Percentage:</label>
                                         <asp:TextBox ID="txtCompObtainPercentage" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                     </div>
                                 </div>--%>
                             <div class="col-md-3">
-                                <div class="form-group pb-0">
+                                <div class="form-group">
                                     <label class="form-control-label">Total Obtain Weightage:</label>
                                     <asp:TextBox ID="txtCompObtainWeightage" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                 </div>
@@ -1580,19 +1580,19 @@
                         <asp:Panel runat="server" ID="divProductGroup">
                             <div class="row mb-1">
                                 <div class="col-md-3">
-                                    <div class="form-group pb-0">
+                                    <div class="form-group">
                                         <label class="form-control-label">Vendor Serviceability:</label>
                                         <asp:TextBox ID="txtVendorServiceAblity" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <div class="form-group pb-0">
+                                    <div class="form-group">
                                         <label class="form-control-label">Target Weightage:</label>
                                         <asp:TextBox ID="txtgrpServicetargetweightage" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <div class="form-group pb-0">
+                                    <div class="form-group">
                                         <label class="form-control-label">Obtain Weightage:</label>
                                         <asp:TextBox ID="txtgrpServiceObtainweightage" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                     </div>
@@ -1649,19 +1649,19 @@
                         <asp:Panel runat="server" ID="divProduct">
                             <div class="row mb-1">
                                 <div class="col-md-3">
-                                    <div class="form-group pb-0">
+                                    <div class="form-group">
                                         <label class="form-control-label">Product Group:</label>
                                         <asp:TextBox ID="txtServiceBrandName" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <div class="form-group pb-0">
+                                    <div class="form-group">
                                         <label class="form-control-label">Product Group Volume:</label>
                                         <asp:TextBox ID="txtServiceTotalVol" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <div class="form-group pb-0">
+                                    <div class="form-group">
                                         <label class="form-control-label">Product Group Serviceability:</label>
                                         <asp:TextBox ID="txtServiceGrpserviceablity" runat="server" class="form-control form-control-sm" Enabled="false" AutoComplete="off"></asp:TextBox>
                                     </div>
@@ -1781,7 +1781,7 @@
     </asp:ModalPopupExtender>
     <asp:Panel ID="Panel5" runat="server" CssClass="modal-popup">
         <div class="modal-content-custom">
-            <div class="modal-header-custom">
+            <div class="modal-header">
                 <h5>
                     <asp:Label runat="server" ID="lblLtTyPopHdr"></asp:Label></h5>
                 <asp:Button ID="btnLyTyPop" runat="server" Text="×" CssClass="close-btn" OnClick="btnLyTyPop_Click" />

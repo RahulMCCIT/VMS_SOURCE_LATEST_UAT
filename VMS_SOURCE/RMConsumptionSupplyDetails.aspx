@@ -9,6 +9,16 @@
     <script type="text/javascript" src="Scripts/FunctionValidator.js"></script>
     <%--<asp:ToolkitScriptManager runat="server"></asp:ToolkitScriptManager>--%>
 
+    <style>
+        .p-rm-supply-table table tbody tr:nth-child(4) {
+            box-shadow: none !important;
+        }
+
+        .upgradDataGrid .tlrowlight {
+            box-shadow: none !important;
+        }
+    </style>
+
     <div class="breadcrumbs">
         <div class="leftFung">
             <a href="Home.aspx" title="Home"><i class="fas fa-home"></i></a>
@@ -26,20 +36,20 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
-                    <div class="form-group pb-0">
+                    <div class="form-group">
                         <label class="form-control-label">Quarter:<span id="Span12" class="mandatory">*</span></label>
                         <asp:DropDownList ID="ddlQuarter" CssClass="form-control select2" runat="server" AutoPostBack="true" />
 
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="form-group pb-0">
+                    <div class="form-group">
                         <label class="form-control-label">Vendor:</label>
                         <asp:DropDownList ID="ddlVendor" CssClass="form-control select2" runat="server" AutoPostBack="true" />
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="form-group pb-0">
+                    <div class="form-group">
                         <label class="form-control-label">Product:</label>
                         <asp:TextBox ID="txtProduct" CssClass="form-control" runat="server"></asp:TextBox>
 
@@ -64,7 +74,7 @@
         <div class="card-body">
             <asp:UpdatePanel ID="updetails" runat="server">
                 <ContentTemplate>
-                    <div class="table-responsive">
+                    <div class="table-responsive p-rm-supply-table">
                         <asp:GridView CssClass="upgradDataGrid" border="1" CellSpacing="0" CellPadding="0" ID="gvConsumption" runat="server"
                             AutoGenerateColumns="false" AllowPaging="false" Visible="true" ShowFooter="false" GridLines="both" OnRowCommand="gvConsumption_RowCommand" OnDataBound="gvConsumption_DataBound">
                             <RowStyle CssClass="tlrowlight" />
@@ -119,8 +129,8 @@
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="" HeaderStyle-HorizontalAlign="Center" Visible="true">
                                     <ItemTemplate>
-                                          <asp:LinkButton ID="btnView" runat="server" Visible="true"  CommandName="ViewDetails" CommandArgument='<%# Eval("vendorid") & "|" & Eval("vendorid") %>' ToolTip="Click To View Details"><i class="fa fa-eye"></i></asp:LinkButton>
-                                       <%-- <asp:Button ID="btnView" CommandName="ViewDetails" Visible="true" runat="server" CssClass="btn btn-info gridBtn" Text="View" title="View" ToolTip="Click To View Details" CommandArgument='<%# Eval("vendorid") & "|" & Eval("vendorid") %>'></asp:Button>--%>
+                                        <asp:LinkButton ID="btnView" runat="server" Visible="true" CommandName="ViewDetails" CommandArgument='<%# Eval("vendorid") & "|" & Eval("vendorid") %>' ToolTip="Click To View Details"><i class="fa fa-eye"></i></asp:LinkButton>
+                                        <%-- <asp:Button ID="btnView" CommandName="ViewDetails" Visible="true" runat="server" CssClass="btn btn-info gridBtn" Text="View" title="View" ToolTip="Click To View Details" CommandArgument='<%# Eval("vendorid") & "|" & Eval("vendorid") %>'></asp:Button>--%>
                                     </ItemTemplate>
                                     <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="10%" />
                                     <ItemStyle HorizontalAlign="Center" VerticalAlign="Middle" Width="10%" />

@@ -15,6 +15,7 @@ Partial Class UnitDespatchPlanListVr1
         If Not IsPostBack Then
             btnAprove.Enabled = False
             CheckLogin()
+            PopulateProcessYears()
             GetScreenDetails()
             PopulateRegion()
             PopulateDepotName()
@@ -111,24 +112,43 @@ Partial Class UnitDespatchPlanListVr1
         End If
 
     End Sub
+    'Modified-by MUKESH BHAGAT on 16-10-2026 : the download used to WriteFile + TransmitFile the same file (sent twice),
+    'never end the response (the page HTML was appended to the file) and read the MIME type from the registry, and any
+    'failure (file missing on the server, registry denied) was an unhandled exception that the server turned into a
+    'redirect - the user never saw why. Now: one TransmitFile, response completed, and a clear message that names the
+    'server path when the file is not there (full path shown to SYSADMIN / HO only).
     Private Sub DownloadDocument(ByVal genReportPath As String, ByVal DocumentName As String, ByVal FileName As String)
-        If genReportPath <> String.Empty AndAlso DocumentName <> String.Empty Then
-            Dim appSupervisionFileAbsolutePath As String = String.Concat(genReportPath, DocumentName)
+        Dim fullPath As String = String.Concat(genReportPath, DocumentName)
+        Try
+            If genReportPath = String.Empty OrElse DocumentName = String.Empty OrElse Not File.Exists(fullPath) Then
+                ShowDownloadError("The challan document is not on the server.", fullPath)
+                Exit Sub
+            End If
             Response.Clear()
+            Response.ClearHeaders()
+            Response.Buffer = True
             Response.Charset = ""
-            Response.ContentType = GetMIMETypeNew(appSupervisionFileAbsolutePath)
-            Response.WriteFile(genReportPath & DocumentName)
-            Response.AppendHeader("content-disposition", "attachment; filename=" & FileName)
-            Response.TransmitFile(String.Concat(appSupervisionFileAbsolutePath))
+            Response.ContentType = MimeMapping.GetMimeMapping(fullPath)
+            Response.AppendHeader("Content-Disposition", "attachment; filename=""" & FileName & """")
+            Response.AppendHeader("Content-Length", New FileInfo(fullPath).Length.ToString())
             Response.Cache.SetCacheability(HttpCacheability.NoCache)
+            Response.TransmitFile(fullPath)
             Response.Flush()
-            ' Response.End()
-            'HttpContext.Current.Response.Flush()
-            'HttpContext.Current.Response.SuppressContent = True
-            'HttpContext.Current.ApplicationInstance.CompleteRequest()
-        Else
-            ScriptManager.RegisterStartupScript(Me, [GetType](), "showalert", "alert('Files or Directory Not Found!!');", True)
-        End If
+            Response.SuppressContent = True
+            HttpContext.Current.ApplicationInstance.CompleteRequest()      ' stop here: no page HTML after the file bytes
+        Catch ex As Threading.ThreadAbortException
+            Throw
+        Catch ex As Exception
+            ShowDownloadError("The challan document could not be downloaded: " & ex.Message, fullPath)
+        End Try
+    End Sub
+
+    ''' <summary>Shows why a download failed. SYSADMIN and HO also see the full server path so the file can be located.</summary>
+    Private Sub ShowDownloadError(ByVal message As String, ByVal fullPath As String)
+        Dim g As String = Convert.ToString(userInfo.userGroupCodeEntity)
+        Dim showPath As Boolean = g = Constant.UserFormAccess.SYSADMIN OrElse g = Constant.UserFormAccess.HO OrElse g = Constant.UserFormAccess.HOMARKETING OrElse g = Constant.UserFormAccess.HOACCOUNTS
+        lblErrorMessage.Text = Server.HtmlEncode(message) & If(showPath, "<br /><small>Path: " & Server.HtmlEncode(fullPath) & "</small>", "")
+        ScriptManager.RegisterStartupScript(Me, [GetType](), "dlerr", "alert(" & HttpUtility.JavaScriptStringEncode(message & If(showPath, vbLf & "Path: " & fullPath, ""), True) & ");", True)
     End Sub
     Public Function GetMIMETypeNew(ByVal filepath As String) As String
         Dim regPerm As RegistryPermission = New RegistryPermission(RegistryPermissionAccess.Read, "\\HKEY_CLASSES_ROOT")
@@ -145,6 +165,26 @@ Partial Class UnitDespatchPlanListVr1
         Next
         Return keyname
     End Function
+    'Modified-by MUKESH BHAGAT on 22-09-2026 : the download buttons were registered for a FULL
+    'postback only in RowDataBound, which runs only when the grid is (re)bound - Search / paging.
+    'Print is an async postback that does not rebind the grid, so on that request the rows are
+    'rebuilt from ViewState, RowDataBound never fires, the registration is lost and the next
+    'Invoice / E-Way click goes out as an async postback. Streaming a file into a partial-postback
+    'response gives "Sys.WebForms.PageRequestManagerParserErrorException: The message received
+    'from the server could not be parsed". RowCreated fires for every row on EVERY request
+    '(bound or recreated), so registering here keeps the buttons full-postback after Print too.
+    Protected Sub gvChallanDetails_RowCreated(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewRowEventArgs) Handles gvChallanDetails.RowCreated
+        If e.Row.RowType <> DataControlRowType.DataRow Then Exit Sub
+        Dim sm As ScriptManager = ScriptManager.GetCurrent(Me.Page)
+        If sm Is Nothing Then Exit Sub
+
+        Dim btnDownloadChallan As LinkButton = TryCast(e.Row.FindControl("ImgbtndownloadChallan"), LinkButton)
+        If btnDownloadChallan IsNot Nothing Then sm.RegisterPostBackControl(btnDownloadChallan)
+
+        Dim btnDownloadEway As LinkButton = TryCast(e.Row.FindControl("ImgbtndownloadEway"), LinkButton)
+        If btnDownloadEway IsNot Nothing Then sm.RegisterPostBackControl(btnDownloadEway)
+    End Sub
+
     Protected Sub gvChallanDetails_RowDataBound(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewRowEventArgs) Handles gvChallanDetails.RowDataBound
         If (e.Row.RowType = DataControlRowType.DataRow) Then
             Dim chk As CheckBox = e.Row.FindControl("chkSelect")
@@ -247,6 +287,18 @@ Partial Class UnitDespatchPlanListVr1
             Response.Redirect("~/Login.aspx")
         End If
     End Sub
+    'Modified-by MUKESH BHAGAT on 02-09-2026 : the Process Year list was hardcoded 2010-2025 in
+    'the markup; when standard_parameter.process_year rolls past the last item, the
+    'SelectedValue assignment in GetScreenDetails throws and the page stops opening.
+    'Generated 2010 up to the current year instead (no future years).
+    Private Sub PopulateProcessYears()
+        'Modified-by MUKESH BHAGAT on 02-09-2026 : now database-driven - years come from
+        'dbo.fin_year through the shared Common.BindProcessYearDropdown, so a new process
+        'year is one master-data insert for the whole application.
+        Dim commonObj As New Common
+        commonObj.BindProcessYearDropdown(ddlYear, Constant.Common.Company, Constant.Common.ActiveStatus)
+    End Sub
+
     Private Sub GetScreenDetails()
         Dim ScreenDS As DataSet
         Dim StockObj As New UnitDespatchClass
@@ -304,7 +356,9 @@ Partial Class UnitDespatchPlanListVr1
             End Try
             System.Math.Min(System.Threading.Interlocked.Increment(index), index - 1)
         End While
-        ddlPageSize.Items.Insert(0, New ListItem("999", 999, True))
+        'Modified-by MUKESH BHAGAT on 08-09-2026 : removed the hard-coded 999 "show all" default.
+        'The dropdown now holds only the sizes configured in Web.config (PageSize), and the
+        'default is the first of those - same as Estimation_Data_Despatched_Status.aspx.
         gvChallanDetails.PageSize = ddlPageSize.SelectedValue
     End Sub
     Private Sub PopulateUnit()
@@ -553,5 +607,22 @@ z:
     End Sub
 #End Region
 
+    'Modified-by MUKESH BHAGAT on 07-09-2026 : Results Per Page and the pager were both dead on
+    'this page - ddlPageSize posted back with nothing handling it, and the pager links did
+    'nothing because PageIndexChanging was never handled. Wired the same way as the working
+    'Estimation_Data_Despatched_Status.aspx. PageIndex is reset when the size changes so the
+    'grid cannot be left sitting on a page number that no longer exists under the new size.
+#Region "Paging"
+    Protected Sub ddlPageSize_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ddlPageSize.SelectedIndexChanged
+        gvChallanDetails.PageSize = Convert.ToInt32(ddlPageSize.SelectedValue)
+        gvChallanDetails.PageIndex = 0
+        BindGrid()
+    End Sub
+
+    Protected Sub gvChallanDetails_PageIndexChanging(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewPageEventArgs) Handles gvChallanDetails.PageIndexChanging
+        gvChallanDetails.PageIndex = e.NewPageIndex
+        BindGrid()
+    End Sub
+#End Region
 
 End Class

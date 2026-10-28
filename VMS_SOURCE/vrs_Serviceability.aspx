@@ -26,13 +26,13 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                            <div class="form-group pb-0">
+                            <div class="form-group">
                                 <label class="form-control-label">Quarter:</label>
                                 <asp:DropDownList ID="ddlquartor" class="form-control select2" runat="server" />
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group pb-0">
+                            <div class="form-group">
                                 <label class="form-control-label">Vendor:</label>
                                 <asp:TextBox ID="txtVendorcode" runat="server" class="form-control" AutoComplete="off" Enabled="false"></asp:TextBox>
                             </div>
@@ -165,6 +165,9 @@
                                 <div class="col-md-12">
                                     <asp:UpdatePanel runat="server">
                                         <ContentTemplate>
+                                            <%-- Modified-by MUKESH BHAGAT on 08-09-2026 : table-responsive gives the grid the
+                                                 440px scroll box (upgrad-style.css) so the sticky headerGrid row stays pinned. --%>
+                                            <div class="table-responsive">
                                             <asp:GridView ID="gvDirectDispatch" runat="server" AutoGenerateColumns="False" EmptyDataText="No records found"
                                                 AllowPaging="true" PageSize="20" CssClass="upgradDataGrid"  border="1" CellSpacing="0" CellPadding="0">
                                                 <RowStyle CssClass="tlrowlight" Font-Strikeout="False"  />
@@ -217,6 +220,7 @@
                                                     </asp:TemplateField>
                                                 </Columns>
                                             </asp:GridView>
+                                            </div>
                                           
                                            
                                         </ContentTemplate>
@@ -243,25 +247,25 @@
                         <ContentTemplate>
                             <div class="row mb-1">
                                 <div class="col-md-3">
-                                    <div class="form-group pb-0">
+                                    <div class="form-group">
                                         <label class="form-control-label">Total Target Score:</label>
                                         <asp:TextBox ID="txttotalTargetScore" runat="server" class="form-control" Enabled="false" AutoComplete="off"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <div class="form-group pb-0">
+                                    <div class="form-group">
                                         <label class="form-control-label">Total Obtain Score:</label>
                                         <asp:TextBox ID="txttotalObtainScore" runat="server" class="form-control" Enabled="false" AutoComplete="off"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <div class="form-group pb-0">
+                                    <div class="form-group">
                                         <label class="form-control-label">Total Obtain Percentage:</label>
                                         <asp:TextBox ID="txttotalObtainPercentage" runat="server" class="form-control" Enabled="false" AutoComplete="off"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <div class="form-group pb-0">
+                                    <div class="form-group">
                                         <label class="form-control-label">Total Obtain Weightage:</label>
                                         <asp:TextBox ID="txtWeightage" runat="server" class="form-control" Enabled="false" AutoComplete="off"></asp:TextBox>
                                     </div>
@@ -269,7 +273,12 @@
                             </div>
                             <hr />
 
-                            <asp:GridView ID="gvStatutoryDetails" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered table-striped">
+                            <%-- Modified-by MUKESH BHAGAT on 08-09-2026 : this grid had neither the upgradDataGrid
+                                 class nor a headerGrid header row, so the global sticky rule could not apply. Both
+                                 added, plus the table-responsive scroll box, to freeze the header like the others. --%>
+                            <div class="table-responsive">
+                            <asp:GridView ID="gvStatutoryDetails" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered table-striped upgradDataGrid">
+                                <HeaderStyle CssClass="headerGrid" />
                                 <Columns>
                                     <asp:TemplateField HeaderText="Slno." ControlStyle-Width="90%">
                                         <ItemTemplate>
@@ -344,6 +353,7 @@
                                     </asp:TemplateField>
                                 </Columns>
                             </asp:GridView>
+                            </div>
 
                         </ContentTemplate>
                     </asp:UpdatePanel>

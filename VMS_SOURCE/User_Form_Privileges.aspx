@@ -18,8 +18,8 @@
     </div>
 
     <div class="card">
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 15px 10px 0">
-            <div class="mst-panel-header" style="padding: 10px;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div class="mst-panel-header">
                 <div class="mst-panel-header-left">
                     <span class="mst-panel-icon"><i class="fas fa-list"></i></span>
                     <div>
@@ -28,7 +28,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group ddlPageSize" style="display: flex; align-items: center; padding: 0 15px;">
+            <div class="form-group ddlPageSize" style="display: flex; align-items: center;">
                 <label class="col-auto form-control-label">User Group</label>
                 <div style="min-width: 180px;">
                     <asp:DropDownList ID="ddlUsrGrp" CssClass="form-control select2" runat="server" AutoPostBack="true"></asp:DropDownList>
@@ -133,11 +133,11 @@
 
                         <asp:TemplateField HeaderText="Edit" HeaderStyle-HorizontalAlign="Center">
                             <ItemTemplate>
-                                <asp:ImageButton ID="btnEdit" CommandName="edit" runat="server" ImageUrl="~/Images/edit.jpg" />
+                                <asp:ImageButton ID="btnEdit" CommandName="edit" CssClass="btn btn-info btn-sm" runat="server" ImageUrl="~/Images/p-edit.png" />
                             </ItemTemplate>
                             <EditItemTemplate>
-                                <asp:ImageButton ID="btnUpdate" CommandName="update" runat="server" ImageUrl="~/Images/b_save.gif" />
-                                <asp:ImageButton ID="btnCancel" CommandName="cancel" runat="server" ImageUrl="~/Images/b_cancel.gif" />
+                                <asp:ImageButton ID="btnUpdate" CommandName="update" runat="server" title="Save" ImageUrl="~/Images/p-save.png" />
+                                <asp:ImageButton ID="btnCancel" CommandName="cancel" runat="server" title="Cancel" ImageUrl="~/Images/p-cancel.png" />
                             </EditItemTemplate>
                         </asp:TemplateField>
                     </Columns>

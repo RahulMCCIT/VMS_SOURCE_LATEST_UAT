@@ -11,6 +11,26 @@ Imports System.Globalization
 
 Partial Class UnitDespatchPlanAddUpdateVr1
     Inherits System.Web.UI.Page
+
+    'Modified-by MUKESH BHAGAT on 12-10-2026 : OCR flags for the page script come from the Support
+    'Overrides table (SupportOverrides.aspx); the second argument is the default when no row exists.
+    Protected ReadOnly Property OcrFailOpenJs() As String
+        Get
+            Return If(SupportOverrideClass.GetBool(SupportOverrideClass.OCR_FAIL_OPEN, True), "true", "false")
+        End Get
+    End Property
+
+    Protected ReadOnly Property OcrValidationEnabledJs() As String
+        Get
+            Return If(SupportOverrideClass.GetBool(SupportOverrideClass.OCR_VALIDATION_ENABLED, True), "true", "false")
+        End Get
+    End Property
+
+    Protected ReadOnly Property OcrApiTimeoutMsJs() As String
+        Get
+            Return SupportOverrideClass.GetInt(SupportOverrideClass.OCR_API_TIMEOUT_MS, 30000).ToString()
+        End Get
+    End Property
     Dim Updatemode As Boolean = False
     Dim Aproved_yn As Boolean = False
     Dim userInfo As VMSUserEntity = New VMSUserEntity()
@@ -226,6 +246,10 @@ Partial Class UnitDespatchPlanAddUpdateVr1
             '    Exit Sub
             'End If
 
+            'Modified-by MUKESH BHAGAT on 17-09-2026 : highest GST % among the ticked rows - the rate
+            'applied to the freight below.
+            Dim maxGst As Decimal = 0
+
             For i As Integer = 0 To gvSKUDetails.Rows.Count - 1
                 chk = gvSKUDetails.Rows(i).FindControl("chkSelect")
                 txtThisDesp = gvSKUDetails.Rows(i).FindControl("txtThisDesp")
@@ -236,14 +260,39 @@ Partial Class UnitDespatchPlanAddUpdateVr1
                     ChkCount = ChkCount + 1
                     Dim total As Decimal = Val(txtThisDesp.Text) * Val(hdnSkuRate.Value)
                     TotalRate = TotalRate + (total + (total * Val(hdnSkuGST.Value / 100)))
+                    If CDec(Val(hdnSkuGST.Value)) > maxGst Then maxGst = CDec(Val(hdnSkuGST.Value))
                 End If
             Next
-            'If (TotalRate > Val(txtFinalInvoiceValue.Text)) Then
-            '    ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "alert", "alert('Total Rate (Ind. GST) can not be greater than Final Invoice Value');", True)
-            '    txtFinalInvoiceValue.Focus()
-            '    ScriptManager.RegisterStartupScript(Me, Page.GetType, "Script", "GridSummation();", True)
-            '    Exit Sub
-            'End If
+
+            'Modified-by MUKESH BHAGAT on 02-10-2026 : no SKU ticked used to fall through to the
+            'Final Invoice Value check below with a Total Rate of 0.00, so the vendor got "Final
+            'Invoice Value ... is higher than the Total Rate of 0.00" instead of being told to pick
+            'a SKU (the "select atleast one SKU" message further down was never reached). Same
+            'message, same behaviour, just raised before the rate check.
+            If ChkCount = 0 Then
+                ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "alert", "alert('Please select atleast one SKU');", True)
+                ScriptManager.RegisterStartupScript(Me, Page.GetType, "Script", "GridSummation();", True)
+                Exit Sub
+            End If
+
+            'Modified-by MUKESH BHAGAT on 17-09-2026 : freight. The bill total is SKU taxable + freight
+            '+ GST (GST is charged on the freight too - verified on Soujanya bill DS2627102720: line items
+            '1,033,524 + freight 15,708 = taxable 1,049,232, IGST 18% on that = 188,861.76, total
+            '1,238,094). The SKU grid knows nothing about freight, so the OCR-read freight
+            '(hdnOcrFreight, from tax.freight_amount) is added here at the highest ticked-row GST rate,
+            'otherwise every invoice carrying freight fails the band check by freight + GST-on-freight.
+            'Applied only when the bill was actually read (Y) or the user knowingly saved without
+            'validation (S); an unverified submit never carries a freight value (the browser clears it).
+            Dim ocrFreight As Decimal = 0
+            Dim freightIncGst As Decimal = 0
+            Dim ocrFlagForFreight As String = Convert.ToString(hdnOcrVerified.Value).Trim().ToUpperInvariant()
+            If (ocrFlagForFreight = "Y" OrElse ocrFlagForFreight = "S") AndAlso
+               Decimal.TryParse(Convert.ToString(hdnOcrFreight.Value), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, ocrFreight) AndAlso
+               ocrFreight > 0 Then
+                freightIncGst = ocrFreight + (ocrFreight * maxGst / 100)
+                TotalRate = TotalRate + freightIncGst
+            End If
+
             Dim FinalInvoiceValue As Decimal = 0
             If txtFinalInvoiceValue.Text = "" Then
                 FinalInvoiceValue = 0
@@ -251,6 +300,14 @@ Partial Class UnitDespatchPlanAddUpdateVr1
                 FinalInvoiceValue = Convert.ToDecimal(txtFinalInvoiceValue.Text)
             End If
 
+            'Modified-by MUKESH BHAGAT on 14-09-2026 : this whole check used to be three separate
+            'commented-out, unfinished attempts (dating back to SANTOSH KR, 08-03-2024, in the old
+            'UAT source) - none of them were ever enabled, and the one that came closest (the
+            'sign-based band check) had an off-by-boundary bug: it used Result > Value2 / Result <
+            'Value1 (strict), so a difference of EXACTLY the configured limit was allowed through
+            'instead of blocked. Rewritten as a single check using >= against the same
+            '[Get_Final_Invoice_Value] LOV band (Value1/Value2, e.g. -5/5) - a difference that
+            'reaches the limit is now blocked, not just one that exceeds it.
             Dim Result As Decimal = TotalRate - FinalInvoiceValue
             Dim Value1 As Decimal = 0
             Dim Value2 As Decimal = 0
@@ -261,32 +318,47 @@ Partial Class UnitDespatchPlanAddUpdateVr1
                 Value1 = Convert.ToDecimal(ds.Tables(0).Rows(0)("lov_value"))
                 Value2 = Convert.ToDecimal(ds.Tables(0).Rows(1)("lov_value"))
             End If
-            Dim sign As String = Result.ToString().Substring(0, 1)
-            'If sign = "-" Then
-            '    If (Value1 > Result AndAlso Result < Value2) Then
-            '        ''ModalPopupExtender2.Show()
-            '        lblErrorMessage.Text = "Total Rate Not matching With the Final Invoice Value."
-            '        lblErrorMessage.ForeColor = System.Drawing.Color.Red
-            '        ''ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "alert", "alert('Total Rate not matching with the Final Invoice Value');", True)
-            '        '' txtfinalinvoicevalue.Focus()
-            '        ''ScriptManager.RegisterStartupScript(Me, Page.GetType, "Script", "GridSummation();", True)
-            '        Exit Sub
-            '    End If
-            'Else
-            '    If (Value1 < Result AndAlso Result > Value2) Then
-            '        '' ModalPopupExtender2.Show()
-            '        lblErrorMessage.Text = "Total Rate not matching with the Final Invoice Value."
-            '        lblErrorMessage.ForeColor = System.Drawing.Color.Red
-            '        Exit Sub
-            '    End If
-            'End If
 
-            'If (Value1 < Result < Value2) Then
-            '    ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "alert", "alert('Total Rate not matching with the Final Invoice Value');", True)
-            '    txtFinalInvoiceValue.Focus()
-            '    ScriptManager.RegisterStartupScript(Me, Page.GetType, "Script", "GridSummation();", True)
-            '    Exit Sub
-            'End If
+            Dim lowerBound As Decimal = Math.Min(Value1, Value2)
+            Dim upperBound As Decimal = Math.Max(Value1, Value2)
+
+            'Modified-by MUKESH BHAGAT on 24-09-2026 : only the LOWER side of the band blocks now.
+            'PO rates (Thinner especially) change often; a vendor who invoiced at the OLD, lower rate
+            'keys a Final Invoice Value smaller than the grid total (Result positive, e.g. grid
+            '19,46,969.98 vs invoice 19,20,058.99) and could not save, so the depot could not do the
+            'GRN. Business asked to let such challans through for now. An invoice HIGHER than the
+            'PO-rate total (Result <= lowerBound, vendor billing above PO rate) is still blocked.
+            'The upperBound message / GridSummation() re-run below are unchanged for that case.
+            '
+            'Modified-by MUKESH BHAGAT on 30-09-2026 : the TEMPORARY, one-day exception for unit V02
+            '(month-end SKU rate correction) that sat here was removed after 30-09-2026 - deployed to
+            'production and used that day only, then reverted.
+            '
+            'Modified-by MUKESH BHAGAT on 01-10-2026 : re-added. V02 did not get the despatch challan
+            'entered on 30-09-2026 (same month-end SKU rate correction, still unresolved), so the
+            'challan still cannot save. Business asked for the same exception again, this time through
+            '02-10-2026. Scoped to unit V02 and to 01-10-2026 through 02-10-2026 ONLY (date range, not
+            'time-of-day) - it goes inert on its own from 03-10-2026 even if this block is not removed;
+            'no other unit is exempted, and V02 itself is exempted only in this window, only on this
+            'one check.
+            'REMOVE this block once no longer needed - do not leave it in past 02-10-2026.
+            '
+            'Modified-by MUKESH BHAGAT on 12-10-2026 : the hard-coded unit + date window is replaced by
+            'the Support Overrides page (SupportOverrides.aspx, table support_override_mstr, key
+            'DESPATCH_INVOICE_LIMIT_BYPASS scoped to the unit with a Valid From / To). Support switches
+            'it on and off without a deployment; the rule here is unchanged.
+            Dim isTemporaryV02Exception As Boolean =
+                SupportOverrideClass.IsActive(SupportOverrideClass.DESPATCH_INVOICE_LIMIT_BYPASS, userInfo.userBranchEntity)
+
+            If Result <= lowerBound AndAlso Not isTemporaryV02Exception Then
+                'Modified-by MUKESH BHAGAT on 17-09-2026 : say when freight was included, so the user
+                'can see why the grid footer total and this figure differ.
+                Dim freightNote As String = If(freightIncGst > 0, " (incl. freight " & ocrFreight.ToString("N2") & " + GST " & maxGst.ToString("N2") & "% = " & freightIncGst.ToString("N2") & ")", "")
+                ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "alert", "alert('Final Invoice Value of " & FinalInvoiceValue.ToString("N2") & " is higher than the Total Rate (Incl. GST) of " & TotalRate.ToString("N2") & freightNote & " (difference " & Result.ToString("N2") & "). The invoice cannot exceed the PO-rate total by " & Math.Abs(lowerBound).ToString("N2") & " or more.');", True)
+                txtFinalInvoiceValue.Focus()
+                ScriptManager.RegisterStartupScript(Me, Page.GetType, "Script", "GridSummation();", True)
+                Exit Sub
+            End If
 
             Dim invoiceExists As Integer = 0
             'Modified-by MUKESH BHAGAT on 31-08-2026 : in update mode the challan's own invoice
@@ -323,9 +395,15 @@ Partial Class UnitDespatchPlanAddUpdateVr1
             'A newly uploaded bill must have been read and matched by OCR (gross value +
             'invoice no/date). The browser sets hdnOcrVerified; this server-side check makes
             'sure the validation cannot be skipped by disabling script.
+            'Modified-by MUKESH BHAGAT on 09-09-2026 : "S" is also accepted - the browser sets it when the
+            'bill could not be validated (OCR service down / unreadable PDF) and the user explicitly
+            'chose to save anyway after the warning. Only an unchecked submit ("N") is refused.
+            'Modified-by MUKESH BHAGAT on 06-10-2026 : "S" is also set when COLOURANT_INV_AI fails
+            'or does not answer within OCR_API_TIMEOUT_MS. Those saves are not blocked.
             If sch_fld1.HasFile Then
-                If Not String.Equals(hdnOcrVerified.Value, "Y", StringComparison.OrdinalIgnoreCase) Then
-                    ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "alert", "alert('Please click Extract & Validate Invoice and make sure the entered invoice details match the uploaded bill.');", True)
+                Dim ocrFlag As String = Convert.ToString(hdnOcrVerified.Value).Trim().ToUpperInvariant()
+                If ocrFlag <> "Y" AndAlso ocrFlag <> "S" Then
+                    ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "alert", "alert('The uploaded invoice has not been validated yet. Please click Submit again so it can be checked.');", True)
                     Exit Sub
                 End If
             End If
@@ -1155,6 +1233,12 @@ Partial Class UnitDespatchPlanAddUpdateVr1
         If Not (GetChallanId < 0) Then
             DeleteDetail(sqlConn, sqlTrans)
             InsertDetail(hdnChallanno.Value, sqlConn, sqlTrans)
+            'Modified-by MUKESH BHAGAT on 09-09-2026 : an invoice PDF attached while EDITING was
+            'validated by OCR but never stored (only the insert path called InsertDocument). The
+            'copy must always be kept - including when the user saved after the "could not be
+            'validated" warning - so support can later show exactly which PDF was submitted.
+            '[challan_entry_insert_doc] updates the existing CHALLAN_DOC row when one exists.
+            InsertDocument(Convert.ToInt64(hdnChallanno.Value), userInfo.userIDEntity, userInfo.userBranchEntity, sqlConn, sqlTrans)
             'Modified-by MUKESH BHAGAT on 31-08-2026 : the update transaction was NEVER
             'committed (long-standing defect, present in the old source too). The edit was
             'silently lost, and worse: the idle connection kept the open transaction and its
@@ -1311,8 +1395,19 @@ System.Web.Services.WebMethod()>
 
         'Dim DocsFileName As String = GetFileNameWithoutExtension(sch_fld.FileName) + "." + Extension
         'Dim DocsOrgFileName As String = GetFileNameWithoutExtension(sch_fld.FileName) + "." + Extension
-        Dim DocsFileName As String = sch_fld1.FileName
-        Dim DocsOrgFileName As String = sch_fld1.FileName
+        'Modified-by MUKESH BHAGAT on 09-09-2026 : the file was stored under the user's original
+        'name in a per-DAY folder shared by every vendor, so two uploads called e.g. "invoice.pdf"
+        'on the same day silently overwrote each other and one challan's download served the
+        'other vendor's bill. The stored name is now a GUID plus the original extension
+        '(same scheme as VMS_CORE) so every stored copy is unique. doc_org_filename carries the
+        'stored name because the download paths (list page, edit page, invoice_document_push)
+        'build the file name from it.
+        Dim originalName As String = System.IO.Path.GetFileName(sch_fld1.FileName)
+        'Modified-by MUKESH BHAGAT on 16-10-2026 : stored name = cleaned original name + unique suffix (UploadFileName.SafeFileName),
+        'e.g. "1050, SURAT.pdf" -> "1050_SURAT_3f9a1c7e.pdf". Commas, spaces, quotes etc. broke the download header.
+        Dim uniqueName As String = UploadFileName.SafeFileName(originalName, True)
+        Dim DocsFileName As String = uniqueName
+        Dim DocsOrgFileName As String = uniqueName
         Dim DocPath As String = Format(Date.Now, "dd_MM_yyyy")
 
         If Not sch_fld1.PostedFile Is Nothing And sch_fld1.PostedFile.ContentLength > 0 Then
@@ -1330,9 +1425,9 @@ System.Web.Services.WebMethod()>
                         Dim projectPath As String = ConfigurationManager.AppSettings.Get("UPLOAD_DOCS_FOLDER_ABS_PATH") & userInfo.userCompanyEntity & "\" & "Challan_Docs" & "\" & DocPath
 
 
-                        Dim fn As String = System.IO.Path.GetFileName(sch_fld1.PostedFile.FileName)
-                        'fn = GetFileNameWithoutExtension(fn) + "." + Extension
-                        'fn = fn
+                        'Modified-by MUKESH BHAGAT on 09-09-2026 : save under the unique name
+                        'registered above, not the browser-supplied one
+                        Dim fn As String = uniqueName
                         Dim saveLocation As String = projectPath & "\" & fn
 
 
@@ -1404,7 +1499,7 @@ System.Web.Services.WebMethod()>
             End If
 
             Dim originalName As String = System.IO.Path.GetFileName(sch_fld_eway.PostedFile.FileName)
-            Dim storedName As String = "EWAY_" & ChallanNo.ToString() & "_" & originalName
+            Dim storedName As String = "EWAY_" & ChallanNo.ToString() & "_" & UploadFileName.SafeFileName(originalName)   ' Modified-by MUKESH BHAGAT on 16-10-2026 : cleaned name
             Dim saveLocation As String = projectPath & "\" & storedName
 
             sch_fld_eway.PostedFile.SaveAs(saveLocation)
